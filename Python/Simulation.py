@@ -65,7 +65,7 @@ def simulation_APIC(N, p):
     #Initialize Nodes
     Nodes = []
     for i in range(N):
-        Nodes.append(Node(i, N, p, .8))
+        Nodes.append(Node(i, N, p, .4))
     #random messages
     T = np.random.rand(N, 1)
     #first round of sending messages
@@ -145,12 +145,12 @@ def simulation_RR(N, p):
     #Simulation of Round Robin message sending
     Nodes = []
     for i in range(N):
-        Nodes.append(Node(i, N, p, .8))
+        Nodes.append(Node(i, N, p, .575))
     # random messages
     T = np.random.rand(N, 1)
     M = np.zeros((N, N))
-    count = -N
-    round = -1
+    count = 0
+    round = 0
     exit = 1
     while(exit):
         for i in range(N):
@@ -178,7 +178,7 @@ def simulation_RR(N, p):
 
 
 def test_sim(N):
-    P = [.1, .15, .2, .25, .3, .35, .4, .45, .5, .55, .6, .65, .7]
+    P = [.7, .75, .8, .85, .9, .95, 1]
     ite = 50
     avgRound_APIC = []
     avgRound_RR = []
@@ -210,7 +210,7 @@ def test_sim(N):
         print("round: ", avgRound_RR[j], "count: ", avgCount_RR[j])
         print("Round ThroPut: ", (avgRound_RR[j]- avgRound_APIC[j])/avgRound_RR[j]*100, "Count ThoPut: ", (avgCount_RR[j]- avgCount_APIC[j])/avgCount_RR[j]*100)
 
-#test_sim(14)
+#test_sim(8)
 
 def sim_test_once(N):
     ite = 50
@@ -225,7 +225,7 @@ def sim_test_once(N):
     sumRound_RR = 0
     sumCount_RR = 0
     sumRmin = 0
-    prob = .9
+    prob = .72
     for i in range(ite):
         print(i)
         [Round_APIC, Count_APIC, Rmin] = simulation_APIC(N, prob)
@@ -245,4 +245,41 @@ def sim_test_once(N):
     print("round: ", avgRound_RR[0], "count: ", avgCount_RR[0])
     print("Round ThroPut: ", (avgRound_RR[0] - avgRound_APIC[0]) / avgRound_RR[0] * 100, "Count ThoPut: ",(avgCount_RR[0] - avgCount_APIC[0]) / avgCount_RR[0] * 100)
 
-sim_test_once(10)
+#sim_test_once(14)
+
+def sim_test_2():
+    N = [8, 9, 10, 11, 12, 13, 14, 15, 16]
+    ite = 50
+    avgRound_APIC = []
+    avgRound_RR = []
+    avgCount_APIC = []
+    avgCount_RR = []
+    avgRmin = []
+    prob = .95
+    for n in N:
+        sumRound_APIC = 0
+        sumCount_APIC = 0
+        sumRound_RR = 0
+        sumCount_RR = 0
+        sumRmin = 0
+        for i in range(ite):
+            print(i)
+            [Round_APIC, Count_APIC, Rmin] = simulation_APIC(n, prob)
+            [Round_RR, Count_RR] = simulation_RR(n, prob)
+            sumRound_APIC += Round_APIC
+            sumRound_RR += Round_RR
+            sumCount_APIC += Count_APIC
+            sumCount_RR += Count_RR
+            sumRmin += Rmin
+        avgRound_APIC.append(sumRound_APIC / ite)
+        avgRound_RR.append(sumRound_RR / ite)
+        avgCount_APIC.append(sumCount_APIC / ite)
+        avgCount_RR.append(sumCount_RR / ite)
+        avgRmin.append(sumRmin / ite)
+    for j in range(len(N)):
+        print("round: ", avgRound_APIC[j], "count: ", avgCount_APIC[j], "rmin: ", avgRmin[j])
+        print("round: ", avgRound_RR[j], "count: ", avgCount_RR[j])
+        print("Round ThroPut: ", (avgRound_RR[j] - avgRound_APIC[j]) / avgRound_RR[j] * 100, "Count ThoPut: ",
+              (avgCount_RR[j] - avgCount_APIC[j]) / avgCount_RR[j] * 100)
+
+sim_test_2()
