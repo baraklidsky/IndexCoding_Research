@@ -65,7 +65,7 @@ def simulation_APIC(N, p):
     #Initialize Nodes
     Nodes = []
     for i in range(N):
-        Nodes.append(Node(i, N, p, .4))
+        Nodes.append(Node(i, N, p, .84))
     #random messages
     T = np.random.rand(N, 1)
     #first round of sending messages
@@ -122,6 +122,7 @@ def simulation_APIC(N, p):
         #increment round
         round +=1
         zeros = np.nonzero(U == 0)
+        numleft = np.nonzero(G == 0)
         #If everyone has all the messages, exit while loop of sending
         if len(zeros[0]) == 0 and len(numleft[0]) == 0:
             end = 0
@@ -145,7 +146,7 @@ def simulation_RR(N, p):
     #Simulation of Round Robin message sending
     Nodes = []
     for i in range(N):
-        Nodes.append(Node(i, N, p, .575))
+        Nodes.append(Node(i, N, p, .9))
     # random messages
     T = np.random.rand(N, 1)
     M = np.zeros((N, N))
@@ -157,16 +158,9 @@ def simulation_RR(N, p):
             # IF the receiver that wants the message, has it, don't resend
             if M[i][i] == 0:
                 count += 1
-                for j in range(N):
-                    if Nodes[j].X[i][0] == 0:
-                        if round == -1:
-                            temp = Nodes[j].get_mess_RR(T[i][0], i)
-                        else:
-                            temp = Nodes[j].get_mess_RR2(T[i][0], i)
-                        if temp == 1 and i == j:
-                            M[i][j] = 1
-                        if temp == 1 and i != j:
-                            M[i][j] = 2
+                temp = Nodes[i].get_mess_RR2(T[i][0], i)
+                if temp == 1:
+                    M[i][i] = 1
         round += 1
         diag = np.nonzero(M == 1)
         if len(diag[0]) == N:
@@ -213,7 +207,7 @@ def test_sim(N):
 #test_sim(8)
 
 def sim_test_once(N):
-    ite = 50
+    ite = 500
     avgRound_APIC = []
     avgRound_RR = []
     avgCount_APIC = []
@@ -245,7 +239,7 @@ def sim_test_once(N):
     print("round: ", avgRound_RR[0], "count: ", avgCount_RR[0])
     print("Round ThroPut: ", (avgRound_RR[0] - avgRound_APIC[0]) / avgRound_RR[0] * 100, "Count ThoPut: ",(avgCount_RR[0] - avgCount_APIC[0]) / avgCount_RR[0] * 100)
 
-#sim_test_once(14)
+sim_test_once(8)
 
 def sim_test_2():
     N = [8, 9, 10, 11, 12, 13, 14, 15, 16]
@@ -282,4 +276,45 @@ def sim_test_2():
         print("Round ThroPut: ", (avgRound_RR[j] - avgRound_APIC[j]) / avgRound_RR[j] * 100, "Count ThoPut: ",
               (avgCount_RR[j] - avgCount_APIC[j]) / avgCount_RR[j] * 100)
 
-sim_test_2()
+#sim_test_2()
+
+'''
+while end:
+    # Send all messages of X
+    for i in range(len(X)):
+        tem = U[i][:]
+        left = np.nonzero(tem == 0)
+        # If everyone has X message, don't resend it
+        if len(left[0]) > 0:
+            count += 1
+            for j in left[0]:
+                broadcaster.send(j, PORT)
+    # Send M to everyone
+    num_left = np.nonzero(acks.G == 0)
+    # If everyone has OptM, don't resend it
+    if len(num_left[0]) > 0:
+        count += 1
+        broadcaster.send(OptM, PORT)
+        num_left = np.nonzero(acks.G == 0)
+
+    # increment round
+    round += 1
+    zeros = np.nonzero(U == 0)
+    # If everyone has all the messages, exit while loop of sending
+    if len(zeros[0]) == 0 and len(num_left[0]) == 0:
+        end = 0
+
+while (exit):
+    for i in range(N):
+        # IF the receiver that wants the message, has it, don't resend
+        if M[i][i] == 0:
+            count += 1
+            temp = Nodes[i].get_mess_RR2(T[i][0], i)
+            if temp == 1:
+                M[i][i] = 1
+
+    round += 1
+    diag = np.nonzero(M == 1)
+    if len(diag[0]) == N:
+        exit = 0
+'''
